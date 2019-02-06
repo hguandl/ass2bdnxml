@@ -1,11 +1,11 @@
-CC=i586-mingw32msvc-gcc
-CFLAGS=-O3 -Iinc/ -Wall -DLE_ARCH
-LDFLAGS=-lpng -lz -lvfw32 -Llib/ -liberty
+CC=gcc
+CFLAGS=-DLINUX -m32 -O3 -Wall -DLE_ARCH
+LDFLAGS=-m32 -lpng -lz -Llib/
 OBJS=avs2bdnxml.o auto_split.o palletize.o sup.o sort.o ass.o
 ASMOBJS=frame-a.o
-EXE=avs2bdnxml.exe
+EXE=avs2bdnxml
 
-%.o: %.c %.h Makefile
+%.o: %.c
 	$(CC) -c $< $(CFLAGS)
 
 $(EXE): $(OBJS) $(ASMOBJS)
@@ -14,7 +14,7 @@ $(EXE): $(OBJS) $(ASMOBJS)
 all: $(EXE)
 
 $(ASMOBJS): $(ASMOBJS:%.o=%.asm)
-	yasm -f win32 -m x86 -DARCH_X86_64=0 -DPREFIX=1 $< -o $(<:%.asm=%.o)
+    yasm -f macho32 -m x86 -DARCH_X86_64=0 -DPREFIX=1 $< -o $(<:%.asm=%.o)
 
 dist: clean all
 	strip -s $(EXE)

@@ -169,6 +169,10 @@
 #ifndef LINUX
 #include <windows.h>
 #include <vfw.h>
+#else
+#include <string.h>
+#include <errno.h>
+#define MAX_PATH PATH_MAX
 #endif
 
 #ifndef LINUX
@@ -321,6 +325,8 @@ int close_file_avis( avis_input_t *handle )
 void get_dir_path(char *filename, char *dir_path)
 {
 	char abs_path[MAX_PATH + 1] = {0};
+
+    #ifndef LINUX
 	char drive[3] = {0};
 	char dir[MAX_PATH + 1] = {0};
 
@@ -336,6 +342,17 @@ void get_dir_path(char *filename, char *dir_path)
 	strncpy(dir_path, drive, 2);
 	strncat(dir_path, dir, MAX_PATH - 2);
 
+    #else
+    realpath(filename, abs_path);
+    if (strlen(abs_path) == 0)
+    {
+        fprintf(stderr, "Cannot determine absolute path for: %s\n", filename);
+        exit(1);
+    }
+
+    strncpy(dir_path, abs_path, strlen(abs_path));
+    #endif
+    
 	if (strlen(dir_path) > MAX_PATH - 16)
 	{
 		fprintf(stderr, "Path for PNG files too long.\n");

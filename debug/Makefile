@@ -1,8 +1,8 @@
-CC=i586-mingw32msvc-gcc
+CC=gcc
 CFLAGS=-O3 -Wall -DLE_ARCH
 LDFLAGS=-lm
 OBJS=pgsparse.o
-EXE=pgsparse.exe
+EXE=pgsparse
 
 %.o: %.c
 	$(CC) -c $< $(CFLAGS)
