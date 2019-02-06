@@ -1,0 +1,45 @@
+cmake_minimum_required(VERSION 3.0)
+
+project(ass2bdnxml VERSION 2.1.0 LANGUAGES ASM C)
+
+## WIN32 or POSIX 
+IF (NOT CMAKE_SYSTEM MATCHES "Windows")
+    set(LINUX ON)
+ENDIF (NOT CMAKE_SYSTEM MATCHES "Windows")
+
+## Assembler
+find_program(YASM_EXEC "yasm")
+
+IF (YASM_EXEC MATCHES "YASM_EXEC-NOTFOUND")
+    MESSAGE(FATAL_ERROR "Please install Yasm")
+ENDIF (YASM_EXEC MATCHES "YASM_EXEC-NOTFOUND")
+
+SET(CMAKE_ASM_COMPILER ${YASM_EXEC})
+
+# Platform
+IF (CMAKE_SYSTEM MATCHES "Windows")
+    SET(CMAKE_ASM_FORMAT "win32")
+ELSEIF (CMAKE_SYSTEM MATCHES "Linux")
+    SET(CMAKE_ASM_FORMAT "elf")
+ELSEIF (CMAKE_SYSTEM MATCHES "Darwin")
+    SET(CMAKE_ASM_FORMAT "macho")
+ELSE ()
+    MESSAGE(FATAL_ERROR "Unsupported Platform")
+ENDIF(CMAKE_SYSTEM MATCHES "Windows")
+
+configure_file(
+    "${PROJECT_SOURCE_DIR}/config.h.in"
+    "${PROJECT_BINARY_DIR}/config.h"
+)
+
+include_directories(${PROJECT_BINARY_DIR})
+
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32 -O3 -Wall -DLE_ARCH")
+SET(CMAKE_EXE_LINKER_FLAGS "-m32 -lpng -lz -L${PROJECT_SOURCE_DIR}/lib/")
+
+SET(CMAKE_ASM_FLAGS "-f ${CMAKE_ASM_FORMAT} -m x86 -DARCH_X86_64=0 -DPREFIX=1")
+SET(CMAKE_ASM_COMPILE_OBJECT "<CMAKE_ASM_COMPILER> -o <OBJECT> ${CMAKE_ASM_FLAGS} <SOURCE>")
+
+aux_source_directory(. DIR_SRCS)
+
+add_executable(ass2bdnxml ${DIR_SRCS} frame-a.asm)

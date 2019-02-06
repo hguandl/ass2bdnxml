@@ -161,6 +161,8 @@
 #include "ass.h"
 #include "abstract_lists.h"
 
+#include "config.h"
+
 /* AVIS input code taken from muxers.c from the x264 project (GPLv2 or later).
  * Authors: Laurent Aimar <fenrir@via.ecp.fr>
  *          Loren Merritt <lorenm@u.washington.edu>
